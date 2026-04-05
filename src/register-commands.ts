@@ -14,9 +14,18 @@ if (!token || !clientId || !guildId) {
 const commands = [
     new SlashCommandBuilder()
         .setName("ping")
-        .setDescription("Replies with Pong!")
-        .toJSON(),
-];
+        .setDescription("Replies with Pong!"),
+
+    new SlashCommandBuilder()
+        .setName("laundry")
+        .setDescription("Start a laundry timer")
+        .addIntegerOption(option =>
+            option
+                .setName("seconds")
+                .setDescription("How long until your laundry is done")
+                .setRequired(true)
+        ),
+].map(cmd => cmd.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(token);
 
