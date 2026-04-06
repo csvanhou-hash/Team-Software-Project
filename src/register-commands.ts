@@ -1,5 +1,7 @@
-import { REST, Routes, SlashCommandBuilder } from "discord.js";
+import { REST, Routes } from "discord.js";
 import dotenv from "dotenv";
+
+import { commands } from "./commands/index.js";
 
 dotenv.config();
 
@@ -11,28 +13,16 @@ if (!token || !clientId || !guildId) {
     throw new Error("Missing DISCORD_TOKEN, CLIENT_ID, or GUILD_ID in .env");
 }
 
-const commands = [
-    new SlashCommandBuilder()
-        .setName("ping")
-        .setDescription("Replies with Pong!"),
+const requiredToken = token;
+const requiredClientId = clientId;
+const requiredGuildId = guildId;
 
-    new SlashCommandBuilder()
-        .setName("laundry")
-        .setDescription("Start a laundry timer")
-        .addIntegerOption(option =>
-            option
-                .setName("seconds")
-                .setDescription("How long until your laundry is done")
-                .setRequired(true)
-        ),
-].map(cmd => cmd.toJSON());
-
-const rest = new REST({ version: "10" }).setToken(token);
+const rest = new REST({ version: "10" }).setToken(requiredToken);
 
 async function main() {
     await rest.put(
-        Routes.applicationGuildCommands(clientId, guildId),
-        { body: commands }
+        Routes.applicationGuildCommands(requiredClientId, requiredGuildId),
+        { body: commands.map(command => command.data.toJSON()) }
     );
 
     console.log("Slash commands registered.");
